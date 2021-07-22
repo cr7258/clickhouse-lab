@@ -1,3 +1,5 @@
+# Elasticsearch VS ClickHouse
+
 Clickhouse 是俄罗斯搜索巨头 Yandex 开发的完全列式存储计算的分析型数据库。ClickHouse 在这两年的 OLAP 领域中一直非常热门，国内互联网大厂都有大规模使用。
 
 Elasticsearch 是一个近实时的分布式搜索分析引擎，它的底层存储完全构建在 Lucene 之上。简单来说是通过扩展 Lucene 的单机搜索能力，使其具有分布式的搜索和分析能力。 Elasticsearch 通常会和其它两个开源组件 Logstash（日志采集）和 Kibana（仪表盘）一起提供端到端的日志/搜索分析的功能，常常被简称为 ELK。
