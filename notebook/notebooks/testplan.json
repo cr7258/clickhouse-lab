@@ -1,0 +1,163 @@
+{
+    "runs":10,
+    "targets":[
+       {
+          "name":"es1",
+          "type":"elasticsearch",
+          "config":{
+             "cluster":"elasticsearch",
+             "indices":"syslog-*"
+          }
+       },
+       {
+          "name":"clickhouse1",
+          "type":"clickhouse",
+          "config":{
+             "cluster":"clickhouse"
+          }
+       }
+    ],
+    "testcases":[
+       [
+          "case1",
+          "query all",
+          [
+             {
+                "query":{
+                   "match_all":{
+                      
+                   }
+                }
+             },
+             "SELECT * FROM syslog"
+          ]
+       ],
+       [
+          "case2",
+          "match all",
+          [
+             {
+                "query":{
+                   "match":{
+                      "hostname":"for.org"
+                   }
+                }
+             },
+             "SELECT * FROM syslog WHERE hostname='for.org'"
+          ]
+       ],
+       [
+          "case3",
+          "multi match",
+          [
+             {
+                "query":{
+                   "multi_match":{
+                      "query":"up.com ahmadajmi",
+                      "fields":[
+                         "hostname",
+                         "application"
+                      ]
+                   }
+                }
+             },
+             "SELECT * FROM syslog WHERE hostname='for.org' OR application='ahmadajmi'"
+          ]
+       ],
+       [
+          "case4",
+          "term query",
+          [
+             {
+                "query":{
+                   "term":{
+                      "message":"pretty"
+                   }
+                }
+             },
+             "SELECT * FROM syslog WHERE lowerUTF8(raw) LIKE '%pretty%'"
+          ]
+       ],
+       [
+          "case5",
+          "range query",
+          [
+             {
+                "query":{
+                   "range":{
+                      "version":{
+                         "gte":2
+                      }
+                   }
+                }
+             },
+             "SELECT * FROM syslog WHERE version >= 2"
+          ]
+       ],
+       [
+          "case6",
+          "exist query",
+          [
+             {
+                "query":{
+                   "exists":{
+                      "field":"application"
+                   }
+                }
+             },
+             "SELECT * FROM syslog WHERE application is not NULL"
+          ]
+       ],
+       [
+          "case7",
+          "regex query",
+          [
+             {
+                "query":{
+                   "regexp":{
+                      "hostname":{
+                         "value":"up.*",
+                         "flags":"ALL",
+                         "max_determinized_states":10000,
+                         "rewrite":"constant_score"
+                      }
+                   }
+                }
+             },
+             "SELECT * FROM syslog WHERE match(hostname, 'up.*')"
+          ]
+       ],
+       [
+          "case8",
+          "count aggregation",
+          [
+             {
+                "aggs":{
+                   "version_count":{
+                      "value_count":{
+                         "field":"version"
+                      }
+                   }
+                }
+             },
+             "SELECT count(version) FROM syslog "
+          ]
+       ],
+       [
+          "case9",
+          "cardinality aggregation",
+          [
+             {
+                "aggs":{
+                   "my-agg-name":{
+                      "cardinality":{
+                         "field":"priority"
+                      }
+                   }
+                }
+             },
+             "SELECT count(distinct(priority)) FROM syslog "
+          ]
+       ]
+    ]
+ }
